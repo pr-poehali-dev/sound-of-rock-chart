@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { Badge } from '@/components/ui/badge';
 import UploadDialog from '@/components/UploadDialog';
+import ArtistProfile from '@/components/ArtistProfile';
 
 interface Track {
   id: number;
@@ -19,6 +20,7 @@ const Index = () => {
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [selectedArtist, setSelectedArtist] = useState<string | null>(null);
 
   const chartTracks: Track[] = [
     { id: 1, title: 'Broken Dreams', artist: 'The Void', album: 'Dark Echoes', plays: 45320, rank: 1, trend: 'up' },
@@ -37,6 +39,82 @@ const Index = () => {
     { name: 'Black Highway', genre: 'Hard Rock', tracks: 15 },
     { name: 'Iron Rust', genre: 'Grunge', tracks: 10 },
   ];
+
+  const artistsData: Record<string, any> = {
+    'The Void': {
+      name: 'The Void',
+      genre: 'Alternative Rock',
+      bio: 'The Void — молодая альтернативная рок-группа из Москвы, основанная в 2022 году. Их мрачное звучание и глубокие тексты быстро завоевали сердца фанатов андерграундной сцены. Группа известна своими энергичными живыми выступлениями и экспериментальным подходом к классическому року.',
+      totalPlays: 250000,
+      followers: 8500,
+      photoGradient: '#DC2626, #7f1d1d',
+      tracks: [
+        { id: 1, title: 'Broken Dreams', album: 'Dark Echoes', plays: 45320, duration: '4:12' },
+        { id: 2, title: 'Empty Streets', album: 'Dark Echoes', plays: 38900, duration: '3:45' },
+        { id: 3, title: 'Lost in Time', album: 'Dark Echoes', plays: 32100, duration: '5:20' },
+        { id: 4, title: 'Fade Away', album: 'Shadows', plays: 28400, duration: '4:03' },
+        { id: 5, title: 'Silent Scream', album: 'Shadows', plays: 25600, duration: '3:58' },
+      ],
+      albums: [
+        { id: 1, title: 'Dark Echoes', year: 2024, tracks: 10, plays: 156000, coverGradient: '#DC2626, #18181B' },
+        { id: 2, title: 'Shadows', year: 2023, tracks: 8, plays: 94000, coverGradient: '#7f1d1d, #000000' },
+      ]
+    },
+    'Dead Radio': {
+      name: 'Dead Radio',
+      genre: 'Indie Rock',
+      bio: 'Dead Radio — инди-рок коллектив с уникальным звучанием, сочетающим классические рок-мотивы с современной электроникой. Созданная группой друзей в гараже, группа быстро выросла в одну из самых обсуждаемых на российской рок-сцене.',
+      totalPlays: 180000,
+      followers: 6200,
+      photoGradient: '#DC2626, #991b1b',
+      tracks: [
+        { id: 6, title: 'Electric Storm', album: 'Frequency', plays: 42150, duration: '3:32' },
+        { id: 7, title: 'Radio Waves', album: 'Frequency', plays: 35400, duration: '4:18' },
+        { id: 8, title: 'Static Noise', album: 'Frequency', plays: 29800, duration: '3:50' },
+        { id: 9, title: 'Dead Signal', album: 'Transmission', plays: 26100, duration: '4:45' },
+      ],
+      albums: [
+        { id: 3, title: 'Frequency', year: 2024, tracks: 9, plays: 107000, coverGradient: '#DC2626, #450a0a' },
+        { id: 4, title: 'Transmission', year: 2023, tracks: 7, plays: 73000, coverGradient: '#991b1b, #18181B' },
+      ]
+    },
+    'Black Highway': {
+      name: 'Black Highway',
+      genre: 'Hard Rock',
+      bio: 'Black Highway — тяжелая рок-группа, известная своими мощными гитарными риффами и драйвовыми композициями. С момента основания в 2021 году они выпустили два полноформатных альбома и собрали верную армию фанатов по всей стране.',
+      totalPlays: 320000,
+      followers: 12000,
+      photoGradient: '#DC2626, #000000',
+      tracks: [
+        { id: 10, title: 'Night Rider', album: 'Midnight Run', plays: 38900, duration: '4:28' },
+        { id: 11, title: 'Road to Hell', album: 'Midnight Run', plays: 42300, duration: '5:15' },
+        { id: 12, title: 'Thunder Road', album: 'Midnight Run', plays: 36700, duration: '4:02' },
+        { id: 13, title: 'Highway Dreams', album: 'Speed Demon', plays: 39200, duration: '3:55' },
+      ],
+      albums: [
+        { id: 5, title: 'Midnight Run', year: 2024, tracks: 11, plays: 185000, coverGradient: '#DC2626, #0A0A0A' },
+        { id: 6, title: 'Speed Demon', year: 2022, tracks: 10, plays: 135000, coverGradient: '#7f1d1d, #18181B' },
+      ]
+    },
+    'Iron Rust': {
+      name: 'Iron Rust',
+      genre: 'Grunge',
+      bio: 'Iron Rust — гранжевая группа с сырым звучанием 90-х. Их музыка пропитана духом бунтарства и искренности. Тексты о жизни, боли и надежде находят отклик у молодого поколения, ищущего настоящий рок без прикрас.',
+      totalPlays: 210000,
+      followers: 7800,
+      photoGradient: '#b91c1c, #18181B',
+      tracks: [
+        { id: 14, title: 'Rebel Soul', album: 'Underground', plays: 35670, duration: '4:08' },
+        { id: 15, title: 'Rust and Bones', album: 'Underground', plays: 31200, duration: '3:42' },
+        { id: 16, title: 'Broken Chain', album: 'Underground', plays: 28900, duration: '4:35' },
+        { id: 17, title: 'Iron Will', album: 'Raw Power', plays: 33400, duration: '3:28' },
+      ],
+      albums: [
+        { id: 7, title: 'Underground', year: 2024, tracks: 9, plays: 125000, coverGradient: '#b91c1c, #000000' },
+        { id: 8, title: 'Raw Power', year: 2023, tracks: 8, plays: 85000, coverGradient: '#7f1d1d, #0A0A0A' },
+      ]
+    },
+  };
 
   const handlePlay = (track: Track) => {
     if (currentTrack?.id === track.id) {
@@ -209,8 +287,11 @@ const Index = () => {
                 <div className="p-6">
                   <h3 className="text-2xl font-bold text-white mb-2">{artist.name}</h3>
                   <p className="text-gray-400">{artist.genre}</p>
-                  <Button className="w-full mt-4 bg-transparent border border-[#DC2626] text-[#DC2626] hover:bg-[#DC2626] hover:text-white font-bold">
-                    СЛУШАТЬ
+                  <Button 
+                    onClick={() => setSelectedArtist(artist.name)}
+                    className="w-full mt-4 bg-transparent border border-[#DC2626] text-[#DC2626] hover:bg-[#DC2626] hover:text-white font-bold"
+                  >
+                    ОТКРЫТЬ ПРОФИЛЬ
                   </Button>
                 </div>
               </Card>
@@ -272,6 +353,27 @@ const Index = () => {
       )}
 
       <UploadDialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen} />
+      
+      {selectedArtist && artistsData[selectedArtist] && (
+        <ArtistProfile
+          artist={artistsData[selectedArtist]}
+          tracks={artistsData[selectedArtist].tracks}
+          albums={artistsData[selectedArtist].albums}
+          onClose={() => setSelectedArtist(null)}
+          onPlayTrack={(track) => {
+            setCurrentTrack({
+              id: track.id,
+              title: track.title,
+              artist: selectedArtist,
+              album: track.album,
+              plays: track.plays,
+              rank: 0,
+              trend: 'same'
+            });
+            setIsPlaying(true);
+          }}
+        />
+      )}
     </div>
   );
 };

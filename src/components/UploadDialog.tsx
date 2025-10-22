@@ -10,17 +10,18 @@ import { Card } from '@/components/ui/card';
 interface UploadDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onUploadComplete: (uploadData: any) => void;
 }
 
 type UploadType = 'single' | 'album' | null;
-type Step = 'type' | 'files' | 'info' | 'photo' | 'video' | 'credits' | 'success';
+type Step = 'type' | 'files' | 'info' | 'photo' | 'video' | 'credits' | 'processing' | 'success';
 
 interface TrackFile {
   file: File;
   name: string;
 }
 
-const UploadDialog = ({ open, onOpenChange }: UploadDialogProps) => {
+const UploadDialog = ({ open, onOpenChange, onUploadComplete }: UploadDialogProps) => {
   const [uploadType, setUploadType] = useState<UploadType>(null);
   const [step, setStep] = useState<Step>('type');
   const [tracks, setTracks] = useState<TrackFile[]>([]);
@@ -81,7 +82,28 @@ const UploadDialog = ({ open, onOpenChange }: UploadDialogProps) => {
     else if (step === 'info') setStep('photo');
     else if (step === 'photo') setStep('video');
     else if (step === 'video') setStep('credits');
-    else if (step === 'credits') setStep('success');
+    else if (step === 'credits') {
+      setStep('processing');
+      
+      const uploadData = {
+        type: uploadType,
+        artistName,
+        albumName: uploadType === 'album' ? albumName : '',
+        trackTitle: uploadType === 'single' ? trackTitle : '',
+        tracksCount: tracks.length,
+        artistPhoto,
+        videoUrl,
+        musicAuthor,
+        lyricsAuthor,
+        releaseDate,
+        timestamp: Date.now()
+      };
+      
+      setTimeout(() => {
+        setStep('success');
+        onUploadComplete(uploadData);
+      }, 2000);
+    }
   };
 
   const handleBack = () => {
@@ -398,6 +420,36 @@ const UploadDialog = ({ open, onOpenChange }: UploadDialogProps) => {
                 >
                   ЗАВЕРШИТЬ
                 </Button>
+              </div>
+            </div>
+          )}
+
+          {step === 'processing' && (
+            <div className="text-center space-y-6 py-12">
+              <div className="relative w-32 h-32 mx-auto">
+                <div className="absolute inset-0 border-4 border-[#DC2626] border-t-transparent rounded-full animate-spin" />
+                <div className="absolute inset-4 border-4 border-[#DC2626]/30 border-b-transparent rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1s' }} />
+                <Icon name="Upload" size={48} className="text-[#DC2626] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+              </div>
+              <h3 className="text-3xl font-bold text-white">
+                ОБРАБОТКА...
+              </h3>
+              <p className="text-gray-300 text-lg">
+                Загружаем {uploadType === 'single' ? 'трек' : 'альбом'} на платформу
+              </p>
+              <div className="max-w-md mx-auto space-y-2">
+                <div className="flex items-center gap-3 text-gray-400">
+                  <Icon name="CheckCircle" size={20} className="text-green-500" />
+                  <span>Проверка аудиофайлов</span>
+                </div>
+                <div className="flex items-center gap-3 text-gray-400">
+                  <Icon name="CheckCircle" size={20} className="text-green-500" />
+                  <span>Загрузка метаданных</span>
+                </div>
+                <div className="flex items-center gap-3 text-white">
+                  <div className="w-5 h-5 border-2 border-[#DC2626] border-t-transparent rounded-full animate-spin" />
+                  <span>Добавление в чарт...</span>
+                </div>
               </div>
             </div>
           )}

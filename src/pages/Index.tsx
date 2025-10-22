@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
@@ -21,8 +21,10 @@ const Index = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedArtist, setSelectedArtist] = useState<string | null>(null);
+  const [newUploadedTracks, setNewUploadedTracks] = useState<Track[]>([]);
+  const [showNewTrackBadge, setShowNewTrackBadge] = useState(false);
 
-  const chartTracks: Track[] = [
+  const initialChartTracks: Track[] = [
     { id: 1, title: 'Broken Dreams', artist: 'The Void', album: 'Dark Echoes', plays: 45320, rank: 1, trend: 'up' },
     { id: 2, title: 'Electric Storm', artist: 'Dead Radio', album: 'Frequency', plays: 42150, rank: 2, trend: 'same' },
     { id: 3, title: 'Night Rider', artist: 'Black Highway', album: 'Midnight Run', plays: 38900, rank: 3, trend: 'up' },
@@ -32,6 +34,33 @@ const Index = () => {
     { id: 7, title: 'Rage Machine', artist: 'Steel Echo', album: 'Industrial', plays: 27500, rank: 7, trend: 'up' },
     { id: 8, title: 'Wild Heart', artist: 'Savage Youth', album: 'Revolution', plays: 25100, rank: 8, trend: 'down' },
   ];
+
+  const [chartTracks, setChartTracks] = useState<Track[]>(initialChartTracks);
+
+  const handleUploadComplete = (uploadData: any) => {
+    setTimeout(() => {
+      const newTrack: Track = {
+        id: Date.now(),
+        title: uploadData.type === 'single' ? uploadData.trackTitle : `${uploadData.albumName} (Album)`,
+        artist: uploadData.artistName,
+        album: uploadData.type === 'single' ? 'Single' : uploadData.albumName,
+        plays: Math.floor(Math.random() * 1000) + 100,
+        rank: chartTracks.length + 1,
+        trend: 'up'
+      };
+
+      setNewUploadedTracks(prev => [...prev, newTrack]);
+      setShowNewTrackBadge(true);
+
+      setTimeout(() => {
+        setChartTracks(prev => [...prev, newTrack]);
+        
+        setTimeout(() => {
+          setShowNewTrackBadge(false);
+        }, 5000);
+      }, 1000);
+    }, 120000);
+  };
 
   const featuredArtists = [
     { name: 'The Void', genre: 'Alternative Rock', tracks: 12 },
@@ -209,11 +238,23 @@ const Index = () => {
           </div>
 
           <div className="grid gap-4">
-            {chartTracks.map((track) => (
+            {chartTracks.map((track) => {
+              const isNewTrack = newUploadedTracks.some(t => t.id === track.id);
+              return (
               <Card 
                 key={track.id}
-                className="bg-[#18181B] border-[#52525B] hover:border-[#DC2626] transition-all duration-300 group relative overflow-hidden"
+                className={`bg-[#18181B] border-[#52525B] hover:border-[#DC2626] transition-all duration-300 group relative overflow-hidden ${
+                  isNewTrack ? 'animate-fade-in border-[#DC2626] shadow-lg shadow-[#DC2626]/20' : ''
+                }`}
               >
+                {isNewTrack && showNewTrackBadge && (
+                  <div className="absolute top-2 right-2 z-10">
+                    <Badge className="bg-green-600 text-white border-none animate-pulse">
+                      <Icon name="Sparkles" size={14} className="mr-1" />
+                      НОВЫЙ ТРЕК
+                    </Badge>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-r from-[#DC2626]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative p-6 flex items-center gap-6">
                   <div className="flex items-center gap-4">
@@ -255,7 +296,8 @@ const Index = () => {
                   </div>
                 </div>
               </Card>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -352,7 +394,11 @@ const Index = () => {
         </div>
       )}
 
-      <UploadDialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen} />
+      <UploadDialog 
+        open={uploadDialogOpen} 
+        onOpenChange={setUploadDialogOpen}
+        onUploadComplete={handleUploadComplete}
+      />
       
       {selectedArtist && artistsData[selectedArtist] && (
         <ArtistProfile

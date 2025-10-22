@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { Badge } from '@/components/ui/badge';
+import UploadDialog from '@/components/UploadDialog';
 
 interface Track {
   id: number;
@@ -17,6 +18,7 @@ interface Track {
 const Index = () => {
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
 
   const chartTracks: Track[] = [
     { id: 1, title: 'Broken Dreams', artist: 'The Void', album: 'Dark Echoes', plays: 45320, rank: 1, trend: 'up' },
@@ -73,7 +75,10 @@ const Index = () => {
               <a href="#chart" className="text-white hover:text-[#DC2626] transition-colors font-medium">ЧАРТ</a>
               <a href="#artists" className="text-white hover:text-[#DC2626] transition-colors font-medium">МУЗЫКАНТЫ</a>
               <a href="#albums" className="text-white hover:text-[#DC2626] transition-colors font-medium">АЛЬБОМЫ</a>
-              <Button className="bg-[#DC2626] hover:bg-[#DC2626]/80 text-white font-bold">
+              <Button 
+                onClick={() => setUploadDialogOpen(true)}
+                className="bg-[#DC2626] hover:bg-[#DC2626]/80 text-white font-bold"
+              >
                 ЗАГРУЗИТЬ ТРЕК
               </Button>
             </nav>
@@ -105,7 +110,11 @@ const Index = () => {
                 <Icon name="Play" className="mr-2" size={24} />
                 ИГРАТЬ ТОП-50
               </Button>
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-black font-bold text-lg px-8 py-6">
+              <Button 
+                onClick={() => setUploadDialogOpen(true)}
+                variant="outline" 
+                className="border-white text-white hover:bg-white hover:text-black font-bold text-lg px-8 py-6"
+              >
                 <Icon name="Upload" className="mr-2" size={24} />
                 ЗАГРУЗИТЬ МУЗЫКУ
               </Button>
@@ -261,6 +270,8 @@ const Index = () => {
           </div>
         </div>
       )}
+
+      <UploadDialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen} />
     </div>
   );
 };
